@@ -5,6 +5,7 @@ import logging
 import os
 import ssl
 import uuid
+import numpy as np
 
 import cv2
 from aiohttp import web
@@ -12,12 +13,24 @@ from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder, MediaRelay
 from av import VideoFrame
 
+# mmpose
+from mmpose.apis import inference_topdown, init_model
+from mmpose.utils import register_all_modules
+from mmpose.structures import merge_data_samples
+
+
 ROOT = os.path.dirname(__file__)
 
 logger = logging.getLogger("pc")
 pcs = set()
 relay = MediaRelay()
 
+# mmpose init
+register_all_modules()
+
+config_file = os.path.join(ROOT, 'td-hm_hrnet-w48_8xb32-210e_coco-256x192.py')
+checkpoint_file = os.path.join(ROOT, 'td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth')
+model = init_model(config_file, checkpoint_file, device='cuda:0')
 
 class VideoTransformTrack(MediaStreamTrack):
     """
@@ -84,6 +97,33 @@ class VideoTransformTrack(MediaStreamTrack):
             new_frame = VideoFrame.from_ndarray(img, format="bgr24")
             new_frame.pts = frame.pts
             new_frame.time_base = frame.time_base
+            return new_frame
+        elif self.transform == "pose estimation":
+            frame = await self.track.recv()
+
+            # Convert the frame to a numpy array
+            img = frame.to_ndarray(format="bgr24")
+
+            # Resize the image to the desired dimensions
+            img_resized = cv2.resize(img, (256, 192))
+
+            # perform pose estimation (inference) on a single image
+            batch_results = inference_topdown(model, args.img)
+            results = merge_data_samples(batch_results)
+
+
+            # Extract the predicted keypoints and scores from the inference results
+            vis_image = pose_data['visualization']
+            keypoint_scores = pose_data['predictions']
+
+            # Create a new VideoFrame object with the new numpy array
+            new_frame = VideoFrame.from_ndarray(vis_image, format="bgr24")
+
+            # Set the pts and time_base attributes of the new VideoFrame object
+            new_frame.pts = frame.pts
+            new_frame.time_base = frame.time_base
+
+            # Return the new VideoFrame object
             return new_frame
         else:
             return frame
