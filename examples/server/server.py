@@ -17,6 +17,7 @@ from av import VideoFrame
 from mmpose.apis import inference_topdown, init_model
 from mmpose.utils import register_all_modules
 from mmpose.structures import merge_data_samples
+from mmpose.registry import VISUALIZERS
 
 
 ROOT = os.path.dirname(__file__)
@@ -30,7 +31,23 @@ register_all_modules()
 
 config_file = os.path.join(ROOT, 'td-hm_hrnet-w48_8xb32-210e_coco-256x192.py')
 checkpoint_file = os.path.join(ROOT, 'td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth')
-model = init_model(config_file, checkpoint_file, device='cuda:0')
+cfg_options = dict(model=dict(test_cfg=dict(output_heatmaps=True)))
+
+model = init_model(
+        config_file,
+        checkpoint_file,
+        device='cuda:0',
+        cfg_options=cfg_options)
+
+# init visualizer
+model.cfg.visualizer.radius = 5
+model.cfg.visualizer.alpha = 0.8
+model.cfg.visualizer.line_width = 3
+
+# init visualizer
+visualizer = VISUALIZERS.build(model.cfg.visualizer)
+visualizer.set_dataset_meta(
+    model.dataset_meta, skeleton_style='mmpose')
 
 class VideoTransformTrack(MediaStreamTrack):
     """
@@ -103,30 +120,50 @@ class VideoTransformTrack(MediaStreamTrack):
 
             # Convert the frame to a numpy array
             img = frame.to_ndarray(format="bgr24")
-
+            # print(img)
             # Resize the image to the desired dimensions
-            img_resized = cv2.resize(img, (256, 192))
+            # img_resized = cv2.resize(img, (256, 192))
+            img_resized = img
 
-            # perform pose estimation (inference) on a single image
-            batch_results = inference_topdown(model, args.img)
+            # perform pose estimation (inference) on the resized frame(img)
+            batch_results = inference_topdown(model, img_resized)
             results = merge_data_samples(batch_results)
+            
+            # print results(PoseDataSample) for debugging
+            # print(results)
 
-
-            # Extract the predicted keypoints and scores from the inference results
-            vis_image = pose_data['visualization']
-            keypoint_scores = pose_data['predictions']
-
-            # Create a new VideoFrame object with the new numpy array
-            new_frame = VideoFrame.from_ndarray(vis_image, format="bgr24")
+            # Step 1: save the image with the pose estimation results(for validation)
+            visualizer.add_datasample(
+                'result',
+                img,
+                data_sample=results,
+                draw_gt=False,
+                draw_bbox=True,
+                kpt_thr=0.3,
+                draw_heatmap=False,
+                show_kpt_idx=False,
+                skeleton_style='mmpose',
+                show=False,
+                out_file=None)
+            new_frame_img = visualizer.get_image()
+            new_frame = VideoFrame.from_ndarray(new_frame_img, format="bgr24")
 
             # Set the pts and time_base attributes of the new VideoFrame object
             new_frame.pts = frame.pts
             new_frame.time_base = frame.time_base
-
-            # Return the new VideoFrame object
             return new_frame
+
+            # Step 2: merge the results with the original frame
+
+
+
+            # Create a new VideoFrame object with the new numpy array
+    
+            # Return the new VideoFrame object
         else:
             return frame
+
+
 
 
 async def index(request):
