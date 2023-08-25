@@ -6,6 +6,7 @@ import os
 import ssl
 import uuid
 import numpy as np
+import time
 
 import cv2
 from aiohttp import web
@@ -125,10 +126,14 @@ class VideoTransformTrack(MediaStreamTrack):
             # img_resized = cv2.resize(img, (256, 192))
             img_resized = img
 
+            # Add this code before the pose estimation and visualization code
+            start_time = time.time()
+            print(f"start")
             # perform pose estimation (inference) on the resized frame(img)
             batch_results = inference_topdown(model, img_resized)
             results = merge_data_samples(batch_results)
-            
+            pose_estimation_time = time.time()
+            print(f"pose estimation time: {pose_estimation_time - start_time}")
             # print results(PoseDataSample) for debugging
             # print(results)
 
@@ -151,6 +156,8 @@ class VideoTransformTrack(MediaStreamTrack):
             # Set the pts and time_base attributes of the new VideoFrame object
             new_frame.pts = frame.pts
             new_frame.time_base = frame.time_base
+            visualization_time = time.time()
+            print(f"visualization time: {visualization_time - pose_estimation_time}")
             return new_frame
 
             # Step 2: merge the results with the original frame
