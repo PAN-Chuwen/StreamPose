@@ -174,6 +174,7 @@ class VideoTransformTrack(MediaStreamTrack):
 
 
 async def index(request):
+    logging.info("Received request for index")
     content = open(os.path.join(ROOT, "index.html"), "r").read()
     return web.Response(content_type="text/html", text=content)
 
