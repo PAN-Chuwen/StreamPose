@@ -117,8 +117,6 @@ class VideoTransformTrack(MediaStreamTrack):
             new_frame.time_base = frame.time_base
             return new_frame
         elif self.transform == "pose estimation":
-            frame = await self.track.recv()
-
             # Convert the frame to a numpy array
             img = frame.to_ndarray(format="bgr24")
             # print(img)
