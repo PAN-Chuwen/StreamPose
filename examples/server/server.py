@@ -30,8 +30,8 @@ relay = MediaRelay()
 # mmpose init
 register_all_modules()
 
-config_file = os.path.join(ROOT, 'td-hm_hrnet-w48_8xb32-210e_coco-256x192.py')
-checkpoint_file = os.path.join(ROOT, 'td-hm_hrnet-w48_8xb32-210e_coco-256x192-0e67c616_20220913.pth')
+config_file = os.path.join(ROOT, 'rtmpose-t_8xb256-420e_coco-256x192.py')
+checkpoint_file = os.path.join(ROOT, 'rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth')
 cfg_options = dict(model=dict(test_cfg=dict(output_heatmaps=True)))
 
 model = init_model(
@@ -157,14 +157,6 @@ class VideoTransformTrack(MediaStreamTrack):
             visualization_time = time.time()
             print(f"visualization time: {visualization_time - pose_estimation_time}")
             return new_frame
-
-            # Step 2: merge the results with the original frame
-
-
-
-            # Create a new VideoFrame object with the new numpy array
-    
-            # Return the new VideoFrame object
         else:
             return frame
 
