@@ -29,7 +29,6 @@ relay = MediaRelay()
 
 # mmpose init
 register_all_modules()
-
 config_file = os.path.join(ROOT, 'rtmpose-t_8xb256-420e_coco-256x192.py')
 checkpoint_file = os.path.join(ROOT, 'rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth')
 cfg_options = dict(model=dict(test_cfg=dict(output_heatmaps=True)))
@@ -117,6 +116,7 @@ class VideoTransformTrack(MediaStreamTrack):
             new_frame.time_base = frame.time_base
             return new_frame
         elif self.transform == "pose estimation":
+            
             # Convert the frame to a numpy array
             img = frame.to_ndarray(format="bgr24")
             # print(img)
