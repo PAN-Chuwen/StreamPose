@@ -1,4 +1,5 @@
-_base_ = ['../../../_base_/default_runtime.py']
+# trash design
+_base_ = ['/home/ubuntu/mmpose/configs/_base_/default_runtime.py'] 
 
 # runtime
 max_epochs = 420
