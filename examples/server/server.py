@@ -181,6 +181,10 @@ async def javascript(request):
     content = open(os.path.join(ROOT, "client.js"), "r").read()
     return web.Response(content_type="application/javascript", text=content)
 
+async def style(request):
+    content = open(os.path.join(ROOT, "style.css"), "r").read()
+    return web.Response(content_type="text/style", text=content)
+
 
 async def offer(request):
     params = await request.json()
@@ -291,6 +295,7 @@ if __name__ == "__main__":
     app.on_shutdown.append(on_shutdown)
     app.router.add_get("/", index)
     app.router.add_get("/client.js", javascript)
+    app.router.add_get("/style.css", style)
     app.router.add_post("/offer", offer)
     web.run_app(
         app, access_log=None, host=args.host, port=args.port, ssl_context=ssl_context
