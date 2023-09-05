@@ -31,25 +31,25 @@ relay = MediaRelay()
 register_all_modules()
 
 # init rtmpose-t
-config_file = os.path.join(ROOT, 'model/rtmpose-t/rtmpose-t_8xb256-420e_coco-256x192.py')
-checkpoint_file = os.path.join(ROOT, 'model/rtmpose-t/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth')
+config_file_rtmpose_t = os.path.join(ROOT, 'model/rtmpose-t/rtmpose-t_8xb256-420e_coco-256x192.py')
+checkpoint_file_rtmpose_t = os.path.join(ROOT, 'model/rtmpose-t/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth')
 cfg_options = dict(model=dict(test_cfg=dict(output_heatmaps=True)))
 
-model = init_model(
-        config_file,
-        checkpoint_file,
+model_t = init_model(
+        config_file_rtmpose_t,
+        checkpoint_file_rtmpose_t,
         device='cuda:0',
         cfg_options=cfg_options)
 
 # init visualizer
-model.cfg.visualizer.radius = 5
-model.cfg.visualizer.alpha = 0.8
-model.cfg.visualizer.line_width = 3
+model_t.cfg.visualizer.radius = 5
+model_t.cfg.visualizer.alpha = 0.8
+model_t.cfg.visualizer.line_width = 3
 
-# init visualizer
-visualizer = VISUALIZERS.build(model.cfg.visualizer)
-visualizer.set_dataset_meta(
-    model.dataset_meta, skeleton_style='mmpose')
+# build visualizer
+visualizer_t = VISUALIZERS.build(model_t.cfg.visualizer)
+visualizer_t.set_dataset_meta(
+    model_t.dataset_meta, skeleton_style='mmpose')
 
 # init rtmpose-s
 config_file_rtmpose_s = os.path.join(ROOT, 'model/rtmpose-s/rtmpose-s_8xb256-420e_coco-256x192.py')
@@ -67,10 +67,10 @@ model_s.cfg.visualizer.radius = 5
 model_s.cfg.visualizer.alpha = 0.8
 model_s.cfg.visualizer.line_width = 3
 
-# init visualizer
+# build visualizer
 visualizer_s = VISUALIZERS.build(model_s.cfg.visualizer)
 visualizer_s.set_dataset_meta(
-    model.dataset_meta, skeleton_style='mmpose')
+    model_s.dataset_meta, skeleton_style='mmpose')
 
 
 
@@ -81,68 +81,22 @@ class VideoTransformTrack(MediaStreamTrack):
 
     kind = "video"
     frame_no = 0
+    model = None
+    visualizer = None
 
 
     def __init__(self, track, transform):
         super().__init__()  # don't forget this!
         self.track = track
         self.transform = transform
+        if self.transform == "RTMPose-s":
+            self.model = model_s
+            self.visualizer = visualizer_s
 
     async def recv(self):
         frame = await self.track.recv()
-        VideoTransformTrack.frame_no += 1
-        if self.transform == "cartoon":
-            img = frame.to_ndarray(format="bgr24")
-
-            # prepare color
-            img_color = cv2.pyrDown(cv2.pyrDown(img))
-            for _ in range(6):
-                img_color = cv2.bilateralFilter(img_color, 9, 9, 7)
-            img_color = cv2.pyrUp(cv2.pyrUp(img_color))
-
-            # prepare edges
-            img_edges = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            img_edges = cv2.adaptiveThreshold(
-                cv2.medianBlur(img_edges, 7),
-                255,
-                cv2.ADAPTIVE_THRESH_MEAN_C,
-                cv2.THRESH_BINARY,
-                9,
-                2,
-            )
-            img_edges = cv2.cvtColor(img_edges, cv2.COLOR_GRAY2RGB)
-
-            # combine color and edges
-            img = cv2.bitwise_and(img_color, img_edges)
-
-            # rebuild a VideoFrame, preserving timing information
-            new_frame = VideoFrame.from_ndarray(img, format="bgr24")
-            new_frame.pts = frame.pts
-            new_frame.time_base = frame.time_base
-            return new_frame
-        elif self.transform == "edges":
-            # perform edge detection
-            img = frame.to_ndarray(format="bgr24")
-            img = cv2.cvtColor(cv2.Canny(img, 100, 200), cv2.COLOR_GRAY2BGR)
-
-            # rebuild a VideoFrame, preserving timing information
-            new_frame = VideoFrame.from_ndarray(img, format="bgr24")
-            new_frame.pts = frame.pts
-            new_frame.time_base = frame.time_base
-            return new_frame
-        elif self.transform == "rotate":
-            # rotate image
-            img = frame.to_ndarray(format="bgr24")
-            rows, cols, _ = img.shape
-            M = cv2.getRotationMatrix2D((cols / 2, rows / 2), frame.time * 45, 1)
-            img = cv2.warpAffine(img, M, (cols, rows))
-
-            # rebuild a VideoFrame, preserving timing information
-            new_frame = VideoFrame.from_ndarray(img, format="bgr24")
-            new_frame.pts = frame.pts
-            new_frame.time_base = frame.time_base
-            return new_frame
-        elif self.transform == "RTMPose-s":
+        self.frame_no += 1
+        if self.transform in ["RTMPose-s", "RTMPose-t", "RTMPose-m", "RTMPose-l"]:
             # Save the original frame, with the name of frame_no
             # cv2.imwrite(f'test_img_in/frame_{self.frame_no}.jpg', frame.to_ndarray(format="bgr24"))
             # Convert the frame to a numpy array
@@ -156,7 +110,7 @@ class VideoTransformTrack(MediaStreamTrack):
             start_time = time.time()
             print(f"start")
             # perform pose estimation (inference) on the resized frame(img)
-            batch_results = inference_topdown(model, img_resized)
+            batch_results = inference_topdown(self.model, img_resized)
             results = merge_data_samples(batch_results)
             pose_estimation_time = time.time()
             print(f"pose estimation time: {pose_estimation_time - start_time}")
@@ -164,7 +118,7 @@ class VideoTransformTrack(MediaStreamTrack):
             # print(results)
 
             # Step 1: save the image with the pose estimation results(for validation)
-            visualizer.add_datasample(
+            self.visualizer.add_datasample(
                 'result',
                 img,
                 data_sample=results,
@@ -176,50 +130,7 @@ class VideoTransformTrack(MediaStreamTrack):
                 skeleton_style='mmpose',
                 show=False,
                 out_file=None)
-            new_frame_img = visualizer.get_image()
-            new_frame = VideoFrame.from_ndarray(new_frame_img, format="bgr24")
-
-            # Set the pts and time_base attributes of the new VideoFrame object
-            new_frame.pts = frame.pts
-            new_frame.time_base = frame.time_base
-            visualization_time = time.time()
-            print(f"visualization time: {visualization_time - pose_estimation_time}")
-            return new_frame
-        elif self.transform == "RTMPose-t":
-            # Save the original frame, with the name of frame_no
-            # cv2.imwrite(f'test_img_in/frame_{self.frame_no}.jpg', frame.to_ndarray(format="bgr24"))
-            # Convert the frame to a numpy array
-            img = frame.to_ndarray(format="bgr24")
-            # print(img)
-            # Resize the image to the desired dimensions
-            img_resized = cv2.resize(img, (256, 192))
-            img_resized = img
-
-            # Add this code before the pose estimation and visualization code
-            start_time = time.time()
-            print(f"start")
-            # perform pose estimation (inference) on the resized frame(img)
-            batch_results = inference_topdown(model_s, img_resized)
-            results = merge_data_samples(batch_results)
-            pose_estimation_time = time.time()
-            print(f"pose estimation time: {pose_estimation_time - start_time}")
-            # print results(PoseDataSample) for debugging
-            # print(results)
-
-            # Step 1: save the image with the pose estimation results(for validation)
-            visualizer_s.add_datasample(
-                'result',
-                img,
-                data_sample=results,
-                draw_gt=False,
-                draw_bbox=True,
-                kpt_thr=0.3,
-                draw_heatmap=False,
-                show_kpt_idx=False,
-                skeleton_style='mmpose',
-                show=False,
-                out_file=None)
-            new_frame_img = visualizer_s.get_image()
+            new_frame_img = self.visualizer.get_image()
             new_frame = VideoFrame.from_ndarray(new_frame_img, format="bgr24")
 
             # Set the pts and time_base attributes of the new VideoFrame object
