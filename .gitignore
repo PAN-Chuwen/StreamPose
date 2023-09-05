@@ -18,3 +18,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+test_img_in/
+test_img_out/
+*.pth
