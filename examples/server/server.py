@@ -51,26 +51,26 @@ visualizer = VISUALIZERS.build(model.cfg.visualizer)
 visualizer.set_dataset_meta(
     model.dataset_meta, skeleton_style='mmpose')
 
-# # init rtmpose-s
-# config_file_rtmpose_s = os.path.join(ROOT, 'model/rtmpose-t/rtmpose-t_8xb256-420e_coco-256x192.py')
-# checkpoint_file_rtmpose_s = os.path.join(ROOT, 'model/rtmpose-t/cspnext-tiny_udp-aic-coco_210e-256x192-cbed682d_20230130.pth')
-# cfg_options = dict(model=dict(test_cfg=dict(output_heatmaps=True)))
+# init rtmpose-s
+config_file_rtmpose_s = os.path.join(ROOT, 'model/rtmpose-s/rtmpose-s_8xb256-420e_coco-256x192.py')
+checkpoint_file_rtmpose_s = os.path.join(ROOT, 'model/rtmpose-s/rtmpose-s_simcc-coco_pt-aic-coco_420e-256x192-8edcf0d7_20230127.pth')
+cfg_options = dict(model=dict(test_cfg=dict(output_heatmaps=True)))
 
-# model = init_model(
-#         config_file,
-#         checkpoint_file,
-#         device='cuda:0',
-#         cfg_options=cfg_options)
+model_s = init_model(
+        config_file_rtmpose_s,
+        checkpoint_file_rtmpose_s,
+        device='cuda:0',
+        cfg_options=cfg_options)
 
-# # init visualizer
-# model.cfg.visualizer.radius = 5
-# model.cfg.visualizer.alpha = 0.8
-# model.cfg.visualizer.line_width = 3
+# init visualizer
+model_s.cfg.visualizer.radius = 5
+model_s.cfg.visualizer.alpha = 0.8
+model_s.cfg.visualizer.line_width = 3
 
-# # init visualizer
-# visualizer = VISUALIZERS.build(model.cfg.visualizer)
-# visualizer.set_dataset_meta(
-#     model.dataset_meta, skeleton_style='mmpose')
+# init visualizer
+visualizer_s = VISUALIZERS.build(model_s.cfg.visualizer)
+visualizer_s.set_dataset_meta(
+    model.dataset_meta, skeleton_style='mmpose')
 
 
 
@@ -142,7 +142,7 @@ class VideoTransformTrack(MediaStreamTrack):
             new_frame.pts = frame.pts
             new_frame.time_base = frame.time_base
             return new_frame
-        elif self.transform == "pose estimation":
+        elif self.transform == "RTMPose-s":
             # Save the original frame, with the name of frame_no
             # cv2.imwrite(f'test_img_in/frame_{self.frame_no}.jpg', frame.to_ndarray(format="bgr24"))
             # Convert the frame to a numpy array
@@ -177,6 +177,49 @@ class VideoTransformTrack(MediaStreamTrack):
                 show=False,
                 out_file=None)
             new_frame_img = visualizer.get_image()
+            new_frame = VideoFrame.from_ndarray(new_frame_img, format="bgr24")
+
+            # Set the pts and time_base attributes of the new VideoFrame object
+            new_frame.pts = frame.pts
+            new_frame.time_base = frame.time_base
+            visualization_time = time.time()
+            print(f"visualization time: {visualization_time - pose_estimation_time}")
+            return new_frame
+        elif self.transform == "RTMPose-t":
+            # Save the original frame, with the name of frame_no
+            # cv2.imwrite(f'test_img_in/frame_{self.frame_no}.jpg', frame.to_ndarray(format="bgr24"))
+            # Convert the frame to a numpy array
+            img = frame.to_ndarray(format="bgr24")
+            # print(img)
+            # Resize the image to the desired dimensions
+            img_resized = cv2.resize(img, (256, 192))
+            img_resized = img
+
+            # Add this code before the pose estimation and visualization code
+            start_time = time.time()
+            print(f"start")
+            # perform pose estimation (inference) on the resized frame(img)
+            batch_results = inference_topdown(model_s, img_resized)
+            results = merge_data_samples(batch_results)
+            pose_estimation_time = time.time()
+            print(f"pose estimation time: {pose_estimation_time - start_time}")
+            # print results(PoseDataSample) for debugging
+            # print(results)
+
+            # Step 1: save the image with the pose estimation results(for validation)
+            visualizer_s.add_datasample(
+                'result',
+                img,
+                data_sample=results,
+                draw_gt=False,
+                draw_bbox=True,
+                kpt_thr=0.3,
+                draw_heatmap=False,
+                show_kpt_idx=False,
+                skeleton_style='mmpose',
+                show=False,
+                out_file=None)
+            new_frame_img = visualizer_s.get_image()
             new_frame = VideoFrame.from_ndarray(new_frame_img, format="bgr24")
 
             # Set the pts and time_base attributes of the new VideoFrame object
