@@ -98,6 +98,8 @@ class VideoTransformTrack(MediaStreamTrack):
     model = None
     visualizer = None
 
+    pose_estimation_time_list = []
+
 
     def __init__(self, track, transform):
         super().__init__()  # don't forget this!
@@ -108,16 +110,17 @@ class VideoTransformTrack(MediaStreamTrack):
 
     async def recv(self):
         frame = await self.track.recv()
-        self.frame_no += 1
+        self.frame_no = self.frame_no + 1
+
         if self.transform in ["RTMPose-s", "RTMPose-t", "RTMPose-m", "RTMPose-l"]:
             print("using model", self.transform)
             # Save the original frame, with the name of frame_no
             # cv2.imwrite(f'test_img_in/frame_{self.frame_no}.jpg', frame.to_ndarray(format="bgr24"))
             # Convert the frame to a numpy array
             img = frame.to_ndarray(format="bgr24")
-            # print(img)
+
+            # TODO: figure out the img resize process, where? in MMPose or in server.py / client.js ?
             # Resize the image to the desired dimensions
-            img_resized = cv2.resize(img, (256, 192))
             img_resized = img
 
             # Add this code before the pose estimation and visualization code
@@ -127,11 +130,16 @@ class VideoTransformTrack(MediaStreamTrack):
             batch_results = inference_topdown(self.model, img_resized)
             results = merge_data_samples(batch_results)
             pose_estimation_time = time.time()
+            # print the frame rate according to pose estimation time
             print(f"pose estimation time: {pose_estimation_time - start_time}")
-            # print results(PoseDataSample) for debugging
-            # print(results)
+            
+            #save the time to list
+            self.pose_estimation_time_list.append(pose_estimation_time - start_time)
+            if(len(self.pose_estimation_time_list) == 100):
+                print("average frame rate: ", 1/ (sum(self.pose_estimation_time_list) / len(self.pose_estimation_time_list)))
+                # exit the program
+                exit()
 
-            # Step 1: save the image with the pose estimation results(for validation)
             self.visualizer.add_datasample(
                 'result',
                 img,
