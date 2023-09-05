@@ -30,48 +30,62 @@ relay = MediaRelay()
 # mmpose init
 register_all_modules()
 
-# init rtmpose-t
-config_file_rtmpose_t = os.path.join(ROOT, 'model/rtmpose-t/rtmpose-t_8xb256-420e_coco-256x192.py')
-checkpoint_file_rtmpose_t = os.path.join(ROOT, 'model/rtmpose-t/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth')
-cfg_options = dict(model=dict(test_cfg=dict(output_heatmaps=True)))
 
-model_t = init_model(
-        config_file_rtmpose_t,
-        checkpoint_file_rtmpose_t,
+def init_model_and_visualizer(config_file, checkpoint_file):
+    cfg_options = dict(model=dict(test_cfg=dict(output_heatmaps=True)))
+
+    model = init_model(
+        config_file,
+        checkpoint_file,
         device='cuda:0',
         cfg_options=cfg_options)
 
-# init visualizer
-model_t.cfg.visualizer.radius = 5
-model_t.cfg.visualizer.alpha = 0.8
-model_t.cfg.visualizer.line_width = 3
+    # init visualizer
+    model.cfg.visualizer.radius = 5
+    model.cfg.visualizer.alpha = 0.8
+    model.cfg.visualizer.line_width = 3
 
-# build visualizer
-visualizer_t = VISUALIZERS.build(model_t.cfg.visualizer)
-visualizer_t.set_dataset_meta(
-    model_t.dataset_meta, skeleton_style='mmpose')
+    # build visualizer
+    visualizer = VISUALIZERS.build(model.cfg.visualizer)
+    visualizer.set_dataset_meta(
+        model.dataset_meta, skeleton_style='mmpose')
+
+    return model, visualizer
+
+# init rtmpose-t
+config_file_rtmpose_t = os.path.join(ROOT, 'model/rtmpose-t/rtmpose-t_8xb256-420e_coco-256x192.py')
+checkpoint_file_rtmpose_t = os.path.join(ROOT, 'model/rtmpose-t/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth')
+model_t, visualizer_t = init_model_and_visualizer(config_file_rtmpose_t, checkpoint_file_rtmpose_t)
 
 # init rtmpose-s
 config_file_rtmpose_s = os.path.join(ROOT, 'model/rtmpose-s/rtmpose-s_8xb256-420e_coco-256x192.py')
 checkpoint_file_rtmpose_s = os.path.join(ROOT, 'model/rtmpose-s/rtmpose-s_simcc-coco_pt-aic-coco_420e-256x192-8edcf0d7_20230127.pth')
-cfg_options = dict(model=dict(test_cfg=dict(output_heatmaps=True)))
+model_s, visualizer_s = init_model_and_visualizer(config_file_rtmpose_s, checkpoint_file_rtmpose_s)
 
-model_s = init_model(
-        config_file_rtmpose_s,
-        checkpoint_file_rtmpose_s,
-        device='cuda:0',
-        cfg_options=cfg_options)
+# init rtmpose-m
+config_file_rtmpose_m = os.path.join(ROOT, 'model/rtmpose-m/rtmpose-m_8xb256-420e_coco-256x192.py')
+checkpoint_file_rtmpose_m = os.path.join(ROOT, 'model/rtmpose-m/rtmpose-m_simcc-coco_pt-aic-coco_420e-256x192-d8dd5ca4_20230127.pth')
+model_m, visualizer_m = init_model_and_visualizer(config_file_rtmpose_m, checkpoint_file_rtmpose_m)
 
-# init visualizer
-model_s.cfg.visualizer.radius = 5
-model_s.cfg.visualizer.alpha = 0.8
-model_s.cfg.visualizer.line_width = 3
+# init rtmpose-l
+config_file_rtmpose_l = os.path.join(ROOT, 'model/rtmpose-l/rtmpose-l_8xb256-420e_coco-256x192.py')
+checkpoint_file_rtmpose_l = os.path.join(ROOT, 'model/rtmpose-l/rtmpose-l_simcc-coco_pt-aic-coco_420e-256x192-1352a4d2_20230127.pth')
+model_l, visualizer_l = init_model_and_visualizer(config_file_rtmpose_l, checkpoint_file_rtmpose_l)
 
-# build visualizer
-visualizer_s = VISUALIZERS.build(model_s.cfg.visualizer)
-visualizer_s.set_dataset_meta(
-    model_s.dataset_meta, skeleton_style='mmpose')
 
+models = {
+    "RTMPose-s": model_s,
+    "RTMPose-t": model_t,
+    "RTMPose-m": model_m,
+    "RTMPose-l": model_l,
+}
+
+visualizers = {
+    "RTMPose-s": visualizer_s,
+    "RTMPose-t": visualizer_t,
+    "RTMPose-m": visualizer_m,
+    "RTMPose-l": visualizer_l,
+}
 
 
 class VideoTransformTrack(MediaStreamTrack):
@@ -89,14 +103,14 @@ class VideoTransformTrack(MediaStreamTrack):
         super().__init__()  # don't forget this!
         self.track = track
         self.transform = transform
-        if self.transform == "RTMPose-s":
-            self.model = model_s
-            self.visualizer = visualizer_s
+        self.model = models.get(self.transform)
+        self.visualizer = visualizers.get(self.transform)
 
     async def recv(self):
         frame = await self.track.recv()
         self.frame_no += 1
         if self.transform in ["RTMPose-s", "RTMPose-t", "RTMPose-m", "RTMPose-l"]:
+            print("using model", self.transform)
             # Save the original frame, with the name of frame_no
             # cv2.imwrite(f'test_img_in/frame_{self.frame_no}.jpg', frame.to_ndarray(format="bgr24"))
             # Convert the frame to a numpy array
