@@ -55,6 +55,8 @@ class VideoTransformTrack(MediaStreamTrack):
     """
 
     kind = "video"
+    frame_no = 0
+
 
     def __init__(self, track, transform):
         super().__init__()  # don't forget this!
@@ -63,7 +65,7 @@ class VideoTransformTrack(MediaStreamTrack):
 
     async def recv(self):
         frame = await self.track.recv()
-
+        VideoTransformTrack.frame_no += 1
         if self.transform == "cartoon":
             img = frame.to_ndarray(format="bgr24")
 
@@ -115,13 +117,14 @@ class VideoTransformTrack(MediaStreamTrack):
             new_frame.pts = frame.pts
             new_frame.time_base = frame.time_base
             return new_frame
-        elif self.transform == "pose estimation":
-            
+        elif self.transform == "pose estimation" and self.frame_no % 10 == 0:
+            # Save the original frame, with the name of frame_no
+            cv2.imwrite(f'test_img_in/frame_{self.frame_no}.jpg', frame.to_ndarray(format="bgr24"))
             # Convert the frame to a numpy array
             img = frame.to_ndarray(format="bgr24")
             # print(img)
             # Resize the image to the desired dimensions
-            # img_resized = cv2.resize(img, (256, 192))
+            img_resized = cv2.resize(img, (256, 192))
             img_resized = img
 
             # Add this code before the pose estimation and visualization code
@@ -147,7 +150,7 @@ class VideoTransformTrack(MediaStreamTrack):
                 show_kpt_idx=False,
                 skeleton_style='mmpose',
                 show=False,
-                out_file=None)
+                out_file=f'test_img_out/frame_{self.frame_no}.jpg')
             new_frame_img = visualizer.get_image()
             new_frame = VideoFrame.from_ndarray(new_frame_img, format="bgr24")
 
