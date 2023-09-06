@@ -72,12 +72,27 @@ config_file_rtmpose_l = os.path.join(ROOT, 'model/rtmpose-l/rtmpose-l_8xb256-420
 checkpoint_file_rtmpose_l = os.path.join(ROOT, 'model/rtmpose-l/rtmpose-l_simcc-coco_pt-aic-coco_420e-256x192-1352a4d2_20230127.pth')
 model_l, visualizer_l = init_model_and_visualizer(config_file_rtmpose_l, checkpoint_file_rtmpose_l)
 
+#init hrnet-32-256x192
+config_file_hrnet_256 = os.path.join(ROOT, 'model/hrnet/td-hm_hrnet-w32_udp-8xb64-210e_coco-256x192.py')
+checkpoint_file_hrnet_256 = os.path.join(ROOT, 'model/hrnet/td-hm_hrnet-w32_udp-8xb64-210e_coco-256x192-73ede547_20220914.pth')
+model_hrnet_256, visualizer_hrnet_256 = init_model_and_visualizer(config_file_hrnet_256, checkpoint_file_hrnet_256)
+
+#init hrnet-32-384x288
+config_file_hrnet_384 = os.path.join(ROOT, 'model/hrnet/td-hm_hrnet-w32_udp-8xb64-210e_coco-384x288.py')
+checkpoint_file_hrnet_384 = os.path.join(ROOT, 'model/hrnet/td-hm_hrnet-w32_udp-8xb64-210e_coco-384x288-9a3f7c85_20220914.pth')
+model_hrnet_384, visualizer_hrnet_384 = init_model_and_visualizer(config_file_hrnet_384, checkpoint_file_hrnet_384)
+
+
+
+#init hrnet-32-384x288
 
 models = {
     "RTMPose-s": model_s,
     "RTMPose-t": model_t,
     "RTMPose-m": model_m,
     "RTMPose-l": model_l,
+    "hrnet-32-256x192": model_hrnet_256,
+    "hrnet-32-384x288": model_hrnet_384,
 }
 
 visualizers = {
@@ -85,6 +100,8 @@ visualizers = {
     "RTMPose-t": visualizer_t,
     "RTMPose-m": visualizer_m,
     "RTMPose-l": visualizer_l,
+    "hrnet-32-256x192": visualizer_hrnet_256,
+    "hrnet-32-384x288": visualizer_hrnet_384,
 }
 
 
@@ -116,17 +133,17 @@ class VideoTransformTrack(MediaStreamTrack):
         self.recv_called_time.append(current_time)
 
         # calculate the difference of each element in recv_ called_time when the length reaches 100
-        if(len(self.recv_called_time) == 100):
-            diff = np.diff(self.recv_called_time)
-            # calculate the average webRTC transmission time using difference avg
-            print("average webRTC transmission time: ", (sum(diff) / len(diff)))
-            # exit the program
-            exit()
+        # if(len(self.recv_called_time) == 100):
+        #     diff = np.diff(self.recv_called_time)
+        #     # calculate the average webRTC transmission time using difference avg
+        #     print("average webRTC transmission time: ", (sum(diff) / len(diff)))
+        #     # exit the program
+        #     exit()
 
         frame = await self.track.recv()
         self.frame_no = self.frame_no + 1
 
-        if self.transform in ["RTMPose-s", "RTMPose-t", "RTMPose-m", "RTMPose-l"]:
+        if self.transform in ["RTMPose-s", "RTMPose-t", "RTMPose-m", "RTMPose-l", "hrnet-32-256x192", "hrnet-32-384x288"]:
             print("using model", self.transform)
             # Save the original frame, with the name of frame_no
             # cv2.imwrite(f'test_img_in/frame_{self.frame_no}.jpg', frame.to_ndarray(format="bgr24"))
