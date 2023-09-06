@@ -99,6 +99,9 @@ class VideoTransformTrack(MediaStreamTrack):
     visualizer = None
 
     pose_estimation_time_list = []
+    recv_called_time = []
+
+    
 
 
     def __init__(self, track, transform):
@@ -109,6 +112,17 @@ class VideoTransformTrack(MediaStreamTrack):
         self.visualizer = visualizers.get(self.transform)
 
     async def recv(self):
+        current_time = time.time()
+        self.recv_called_time.append(current_time)
+
+        # calculate the difference of each element in recv_ called_time when the length reaches 100
+        if(len(self.recv_called_time) == 100):
+            diff = np.diff(self.recv_called_time)
+            # calculate the average webRTC transmission time using difference avg
+            print("average webRTC transmission time: ", (sum(diff) / len(diff)))
+            # exit the program
+            exit()
+
         frame = await self.track.recv()
         self.frame_no = self.frame_no + 1
 
