@@ -1,72 +1,80 @@
 body {
-    background-color: lightblue;
+  background-color: lightblue;
 }
 
 /* Style the button element */
 button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 /* Style the pre element */
 pre {
-    overflow-x: hidden;
-    overflow-y: auto;
-    font-family: monospace;
-    font-size: 14px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 14px;
 }
 
 /* Style the video element */
 video {
-    width: 100%;
+  width: 100%;
 }
 
 /* Style the elements with class="option" */
 .option {
-    margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 /* Style the element with id="media" */
 #media {
-    max-width: 1280px;
+  max-width: 1280px;
 }
 
 /* Style the h2 elements */
 h2 {
-    font-family: Arial, sans-serif;
-    font-size: 24px;
-    color: navy;
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  color: navy;
 }
 
 /* Style the input elements */
 input {
-    margin-right: 4px;
+  margin-right: 4px;
 }
 
 /* Style the select elements */
 select {
-    padding: 4px 8px;
+  padding: 4px 8px;
 }
 
 button {
-    padding: 8px 16px;
+  padding: 8px 16px;
 }
 
 pre {
-    overflow-x: hidden;
-    overflow-y: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 video {
-    width: 100%;
+  width: 100%;
 }
 
 .option {
-    margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 #media {
-    max-width: 1280px;
+  max-width: 600px;
+}
+
+
+.video {
+    width: 50%;
+    height: auto;
+    margin: 0;
+    border: none;
 }

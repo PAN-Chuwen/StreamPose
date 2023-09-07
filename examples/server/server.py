@@ -166,10 +166,6 @@ class VideoTransformTrack(MediaStreamTrack):
             
             #save the time to list
             self.pose_estimation_time_list.append(pose_estimation_time - start_time)
-            if(len(self.pose_estimation_time_list) == 100):
-                print("average frame rate: ", 1/ (sum(self.pose_estimation_time_list) / len(self.pose_estimation_time_list)))
-                # exit the program
-                exit()
 
             self.visualizer.add_datasample(
                 'result',
