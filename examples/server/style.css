@@ -1,5 +1,85 @@
+/* Set the font family and size for the entire page */
 body {
-  background-color: lightblue;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+
+/* Set the background color for the entire page */
+body {
+  background-color: #f2f2f2;
+}
+
+/* Style the header container */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding: 16px;
+}
+
+/* Style the page title */
+/* Style the Chinese title */
+.chinese-title {
+  font-size: 48px;
+  color: #1a73e8;
+  margin: 0;
+}
+
+/* Style the English subtitle */
+.english-subtitle {
+  font-size: 24px;
+  color: #555;
+  margin: 5px;
+}
+
+
+/* Style the navigation bar */
+nav {
+  margin: 0;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav li {
+  margin-right: 16px;
+}
+
+nav a {
+  color: #1a73e8;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+nav a:hover {
+  background-color: #f2f2f2;
+}
+
+/* Style the line splitter */
+.header-container::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #ddd;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+/* Set the font size and color for the section titles */
+h2 {
+  font-size: 24px;
+  color: #1a73e8;
 }
 
 /* Style the button element */
@@ -8,6 +88,9 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  background-color: #1a73e8;
+  color: #fff;
+  font-size: 16px;
 }
 
 /* Style the pre element */
@@ -16,65 +99,68 @@ pre {
   overflow-y: auto;
   font-family: monospace;
   font-size: 14px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 4px;
 }
 
 /* Style the video element */
 video {
   width: 100%;
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Style the elements with class="option" */
 .option {
+  margin-bottom: 16px;
+}
+
+/* Style the label element */
+label {
+  display: inline-block;
+  vertical-align: middle;
   margin-bottom: 8px;
+  font-size: 16px;
+  color: #1a73e8;
 }
 
-/* Style the element with id="media" */
-#media {
-  max-width: 1280px;
-}
-
-/* Style the h2 elements */
-h2 {
-  font-family: Arial, sans-serif;
-  font-size: 24px;
-  color: navy;
-}
-
-/* Style the input elements */
-input {
-  margin-right: 4px;
-}
-
-/* Style the select elements */
+/* Style the select element */
 select {
-  padding: 4px 8px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  width: 200px;
+  box-sizing: border-box;
 }
 
-button {
-  padding: 8px 16px;
+/* Style the checkbox element */
+input[type="checkbox"] {
+  margin-right: 8px;
 }
 
-pre {
+/* Style the data channel element */
+#data-channel {
   overflow-x: hidden;
   overflow-y: auto;
+  font-family: monospace;
+  font-size: 14px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 4px;
+  height: 200px;
+  margin-bottom: 16px;
 }
 
-video {
-  width: 100%;
-}
-
-.option {
-  margin-bottom: 8px;
-}
-
-#media {
-  max-width: 600px;
-}
-
-
-.video {
-    width: 50%;
-    height: auto;
-    margin: 0;
-    border: none;
+/* Style the footer element */
+footer {
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+  padding: 16px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
 }

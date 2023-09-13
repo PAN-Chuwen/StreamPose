@@ -103,7 +103,7 @@ function negotiate() {
 }
 
 function start() {
-    document.getElementById('start').style.display = 'none';
+    // document.getElementById('start').style.display = 'none';
 
     pc = createPeerConnection();
 
