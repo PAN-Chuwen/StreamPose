@@ -82,6 +82,25 @@ h2 {
   color: #1a73e8;
 }
 
+.container {
+  display: flex;
+  /* align-items: center; */
+}
+
+.media-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.option-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+}
+
 /* Style the button element */
 button {
   padding: 8px 16px;
@@ -90,7 +109,7 @@ button {
   cursor: pointer;
   background-color: #1a73e8;
   color: #fff;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 /* Style the pre element */
@@ -126,19 +145,35 @@ label {
   color: #1a73e8;
 }
 
+
+.sub-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  margin-left: 16px;
+}
+
+.sub-option .sub-label {
+  display: inline-block;
+  font-size: 14px;
+  color: #555;
+  margin-top: 4px;
+  margin-right:8px;
+  vertical-align: top;
+}
+
 /* Style the select element */
 select {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 16px;
-  width: 200px;
+  font-size: 14px;
+  width: 150px;
   box-sizing: border-box;
 }
 
-/* Style the checkbox element */
-input[type="checkbox"] {
-  margin-right: 8px;
+.option input[type="checkbox"]:checked + .sub-option {
+  margin-left: 8px;
 }
 
 /* Style the data channel element */
