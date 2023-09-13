@@ -182,7 +182,7 @@ function start() {
 }
 
 function stop() {
-    document.getElementById('stop').style.display = 'none';
+    // document.getElementById('stop').style.display = 'none';
 
     // close data channel
     if (dc) {

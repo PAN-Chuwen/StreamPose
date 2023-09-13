@@ -35,7 +35,7 @@
     </header>
     <!-- add a line -->
     <div class="container">
-      <div class="option-div" style="display: inline-block">
+      <div class="option-div">
         <h2>参数设置</h2>
         <div class="option">
           <input id="use-datachannel" checked="checked" type="checkbox" />
@@ -110,12 +110,14 @@
         </div>
       </div>
 
-      <div class="media-div" style="display: inline-block">
-        <button id="start" onclick="start()">Start</button>
-        <button id="stop" style="display: none" onclick="stop()">Stop</button>
+      <div class="media-div">
+        <div class="button-container">
+          <h2>人体姿态估计视频流</h2>
+          <button id="start" onclick="start()">开始</button>
+          <button id="stop" onclick="stop()">停止</button>
+        </div>
 
         <div id="media">
-          <h2>Media</h2>
           <audio id="audio" autoplay="true"></audio>
           <video id="video" autoplay="true" playsinline="true"></video>
         </div>

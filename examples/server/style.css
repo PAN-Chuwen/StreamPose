@@ -33,7 +33,6 @@ body {
   margin: 5px;
 }
 
-
 /* Style the navigation bar */
 nav {
   margin: 0;
@@ -90,15 +89,26 @@ h2 {
 .media-div {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   margin-top: 16px;
 }
 
 .option-div {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   margin-top: 16px;
+  margin-right: 100px;
+  border-right: 1px solid #ddd;
+  padding-right: 40px;
+}
+
+.button-container {
+  margin-bottom: 10px;
+}
+.button-container h2 {
+  display: inline-block;
+  margin-right: 16px;
 }
 
 /* Style the button element */
@@ -110,6 +120,7 @@ button {
   background-color: #1a73e8;
   color: #fff;
   font-size: 18px;
+  max-width: 120px;
 }
 
 /* Style the pre element */
@@ -145,7 +156,6 @@ label {
   color: #1a73e8;
 }
 
-
 .sub-option {
   display: flex;
   align-items: center;
@@ -158,7 +168,7 @@ label {
   font-size: 14px;
   color: #555;
   margin-top: 4px;
-  margin-right:8px;
+  margin-right: 8px;
   vertical-align: top;
 }
 
