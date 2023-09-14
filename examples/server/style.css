@@ -246,3 +246,22 @@ footer {
   font-size: 14px;
   color: #666;
 }
+
+.debug-header {
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
+}
+
+.expand-btn {
+  font-size: 16px;
+  color: #1a73e8;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.expand-btn:hover {
+  transform: rotate(90deg);
+}
