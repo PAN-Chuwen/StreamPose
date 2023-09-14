@@ -2,7 +2,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>demo</title>
+    <title>视频流实时人体姿态估计系统</title>
     <link rel="stylesheet" href="style.css" />
   </head>
 
@@ -21,7 +21,7 @@
     </header>
     <!-- add a line -->
     <div class="container">
-      <div class="option-div">
+      <div class="option-container">
         <h2>参数设置</h2>
         <div class="option">
           <input id="use-datachannel" checked="checked" type="checkbox" />
@@ -96,7 +96,7 @@
         </div>
       </div>
 
-      <div class="media-div">
+      <div class="media-container">
         <div class="button-container">
           <h2>人体姿态估计视频流</h2>
           <button id="start" onclick="start()">开始</button>
@@ -109,10 +109,10 @@
         </div>
       </div>
 
-      <div class="debug-div">
-        <div class="debug-container">
+      <div class="debug-container">
+        <div class="debug-info-container">
           <h2 class="debug-header">
-            连接状态
+            连接日志
             <button class="expand-btn">&#x25B6;</button>
           </h2>
           <div class="expand-container" style="display: none">
@@ -126,7 +126,7 @@
           </div>
         </div>
 
-        <div class="debug-container">
+        <div class="debug-info-container">
           <h2 class="debug-header">
             数据通道
             <button class="expand-btn">&#x25B6;</button>
@@ -137,7 +137,7 @@
           </div>
         </div>
 
-        <div class="debug-container">
+        <div class="debug-info-container">
           <h2 class="debug-header">
             SDP
             <button class="expand-btn">&#x25B6;</button>
@@ -153,7 +153,6 @@
         </div>
       </div>
     </div>
-
     <script src="client.js"></script>
   </body>
 </html>
