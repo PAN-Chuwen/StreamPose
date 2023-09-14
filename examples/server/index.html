@@ -109,22 +109,27 @@
       </div>
     </div>
 
-    <h2>State</h2>
-    <p>ICE gathering state: <span id="ice-gathering-state"></span></p>
-    <p>ICE connection state: <span id="ice-connection-state"></span></p>
-    <p>Signaling state: <span id="signaling-state"></span></p>
+    <div class="debug-div">
+      <h2>连接状态</h2>
+      <p>ICE gathering state: <span id="ice-gathering-state"></span></p>
+      <p>ICE connection state: <span id="ice-connection-state"></span></p>
+      <p>Signaling state: <span id="signaling-state"></span></p>
 
-    <h2>Data channel</h2>
-    <pre id="data-channel" style="height: 200px"></pre>
+      <h2>数据通道</h2>
+      <pre id="data-channel" style="height: 200px"></pre>
 
-    <h2>SDP</h2>
+      <button id="expand-sdp" onclick="toggleSdp()">展开</button>
 
-    <h3>Offer</h3>
-    <pre id="offer-sdp"></pre>
+      <div id="sdp-container" style="display: none">
+        <h2>SDP</h2>
 
-    <h3>Answer</h3>
-    <pre id="answer-sdp"></pre>
+        <h3>请求</h3>
+        <pre id="offer-sdp"></pre>
 
+        <h3>回应</h3>
+        <pre id="answer-sdp"></pre>
+      </div>
+    </div>
     <script src="client.js"></script>
   </body>
 </html>

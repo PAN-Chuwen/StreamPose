@@ -44,6 +44,7 @@ def init_model_and_visualizer(config_file, checkpoint_file):
     model.cfg.visualizer.radius = 5
     model.cfg.visualizer.alpha = 0.8
     model.cfg.visualizer.line_width = 3
+    model.cfg.visualizer.bbox_color = (0xe8, 0x73, 0x1A)
 
     # build visualizer
     visualizer = VISUALIZERS.build(model.cfg.visualizer)
