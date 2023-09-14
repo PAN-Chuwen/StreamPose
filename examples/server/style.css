@@ -172,6 +172,12 @@ pre {
   border-radius: 4px;
   height: 100px;
 }
+.connection-state
+{
+  background-color: #1476f70e;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
 
 /* Style the video element */
 video {
