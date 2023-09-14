@@ -166,10 +166,11 @@ pre {
   overflow-y: auto;
   font-family: monospace;
   font-size: 14px;
-  background-color: #fff;
+  background-color: #dfdbdb;
   border: 1px solid #ddd;
   padding: 8px;
   border-radius: 4px;
+  height: 100px;
 }
 
 /* Style the video element */
@@ -224,7 +225,7 @@ select {
 }
 
 /* Style the data channel element */
-#data-channel {
+/* #data-channel {
   overflow-x: hidden;
   overflow-y: auto;
   font-family: monospace;
@@ -235,7 +236,7 @@ select {
   border-radius: 4px;
   height: 200px;
   margin-bottom: 16px;
-}
+} */
 
 /* Style the footer element */
 footer {

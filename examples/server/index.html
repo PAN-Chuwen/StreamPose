@@ -1,139 +1,150 @@
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>demo</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header>
-      <div class="header-container">
-        <div class="title-container">
-          <h1>
-            <span class="chinese-title">视频流实时人体姿态估计系统</span>
-            <span class="english-subtitle"
-              >Real-Time Human Pose Estimation System for Video Stream</span
-            >
-          </h1>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <div class="header-container">
+      <div class="title-container">
+        <h1>
+          <span class="chinese-title">视频流实时人体姿态估计系统</span>
+          <span class="english-subtitle">Real-Time Human Pose Estimation System for Video Stream</span>
+        </h1>
+      </div>
+    </div>
+  </header>
+  <!-- add a line -->
+  <div class="container">
+    <div class="option-div">
+      <h2>参数设置</h2>
+      <div class="option">
+        <input id="use-datachannel" checked="checked" type="checkbox" />
+        <label for="use-datachannel">数据通道</label>
+        <div class="sub-option">
+          <label class="sub-label" for="datachannel-label">传输设置</label>
+          <select id="datachannel-parameters">
+            <option value='{"ordered": true}'>有序可靠</option>
+            <option value='{"ordered": false, "maxRetransmits": 0}'>
+              无序不重传
+            </option>
+            <option value='{"ordered": false, "maxPacketLifetime": 500}'>
+              无序，生命周期500ms
+            </option>
+          </select>
         </div>
       </div>
-    </header>
-    <!-- add a line -->
-    <div class="container">
-      <div class="option-div">
-        <h2>参数设置</h2>
-        <div class="option">
-          <input id="use-datachannel" checked="checked" type="checkbox" />
-          <label for="use-datachannel">数据通道</label>
-          <div class="sub-option">
-            <label class="sub-label" for="datachannel-label">传输设置</label>
-            <select id="datachannel-parameters">
-              <option value='{"ordered": true}'>有序可靠</option>
-              <option value='{"ordered": false, "maxRetransmits": 0}'>
-                无序不重传
-              </option>
-              <option value='{"ordered": false, "maxPacketLifetime": 500}'>
-                无序，生命周期500ms
-              </option>
-            </select>
-          </div>
-        </div>
-        <div class="option">
-          <input id="use-audio" type="checkbox" />
-          <label for="use-audio">音频传输</label>
-          <div class="sub-option">
-            <label class="sub-label" for="audio-transmission"
-              >音频编解码器</label
-            >
-            <select id="audio-codec">
-              <option value="default" selected>默认</option>
-              <option value="opus/48000/2">Opus</option>
-              <option value="PCMU/8000">PCMU</option>
-              <option value="PCMA/8000">PCMA</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="option">
-          <input id="use-video" checked="checked" type="checkbox" />
-          <label for="use-video">视频传输</label>
-          <div class="sub-option">
-            <label class="sub-label" for="video-resolution">分辨率</label>
-            <select id="video-resolution">
-              <option value="selected">默认分辨率</option>
-              <option value="320x240">320x240</option>
-              <option value="640x480">640x480</option>
-              <option value="960x540">960x540</option>
-              <option value="1280x720">1280x720</option>
-            </select>
-          </div>
-
-          <div class="sub-option">
-            <label class="sub-label" for="video-transform">姿态估计模型</label>
-            <select id="video-transform">
-              <option value="none">无姿态估计（原始视频流）</option>
-              <option value="RTMPose-t" selected>RTMPose-t</option>
-              <option value="RTMPose-s">RTMPose-s</option>
-              <option value="RTMPose-m">RTMPose-m</option>
-              <option value="RTMPose-l">RTMPose-l</option>
-              <option value="hrnet-32-256x192">hrnet-32-256x192</option>
-              <option value="hrnet-32-384x288">hrnet-32-384x288</option>
-            </select>
-          </div>
-          <div class="sub-option">
-            <label class="sub-label" for="video-codec">视频编解码器</label>
-            <select id="video-codec">
-              <option value="default" selected>默认</option>
-              <option value="VP8/90000">VP8</option>
-              <option value="H264/90000">H264</option>
-            </select>
-          </div>
-        </div>
-        <div class="options">
-          <input id="use-stun" type="checkbox" checked="checked" />
-          <label for="use-stun">使用 STUN 服务器建立 WebRTC 连接</label>
+      <div class="option">
+        <input id="use-audio" type="checkbox" />
+        <label for="use-audio">音频传输</label>
+        <div class="sub-option">
+          <label class="sub-label" for="audio-transmission">音频编解码器</label>
+          <select id="audio-codec">
+            <option value="default" selected>默认</option>
+            <option value="opus/48000/2">Opus</option>
+            <option value="PCMU/8000">PCMU</option>
+            <option value="PCMA/8000">PCMA</option>
+          </select>
         </div>
       </div>
 
-      <div class="media-div">
-        <div class="button-container">
-          <h2>人体姿态估计视频流</h2>
-          <button id="start" onclick="start()">开始</button>
-          <button id="stop" onclick="stop()">停止</button>
+      <div class="option">
+        <input id="use-video" checked="checked" type="checkbox" />
+        <label for="use-video">视频传输</label>
+        <div class="sub-option">
+          <label class="sub-label" for="video-resolution">分辨率</label>
+          <select id="video-resolution">
+            <option value="selected">默认分辨率</option>
+            <option value="320x240">320x240</option>
+            <option value="640x480">640x480</option>
+            <option value="960x540">960x540</option>
+            <option value="1280x720">1280x720</option>
+          </select>
         </div>
 
-        <div id="media">
-          <audio id="audio" autoplay="true"></audio>
-          <video id="video" autoplay="true" playsinline="true"></video>
+        <div class="sub-option">
+          <label class="sub-label" for="video-transform">姿态估计模型</label>
+          <select id="video-transform">
+            <option value="none">无姿态估计（原始视频流）</option>
+            <option value="RTMPose-t" selected>RTMPose-t</option>
+            <option value="RTMPose-s">RTMPose-s</option>
+            <option value="RTMPose-m">RTMPose-m</option>
+            <option value="RTMPose-l">RTMPose-l</option>
+            <option value="hrnet-32-256x192">hrnet-32-256x192</option>
+            <option value="hrnet-32-384x288">hrnet-32-384x288</option>
+          </select>
         </div>
+        <div class="sub-option">
+          <label class="sub-label" for="video-codec">视频编解码器</label>
+          <select id="video-codec">
+            <option value="default" selected>默认</option>
+            <option value="VP8/90000">VP8</option>
+            <option value="H264/90000">H264</option>
+          </select>
+        </div>
+      </div>
+      <div class="options">
+        <input id="use-stun" type="checkbox" checked="checked" />
+        <label for="use-stun">使用 STUN 服务器建立 WebRTC 连接</label>
       </div>
     </div>
 
-    <div class="debug-div">
-      <h2>连接状态</h2>
-      <p>ICE gathering state: <span id="ice-gathering-state"></span></p>
-      <p>ICE connection state: <span id="ice-connection-state"></span></p>
-      <p>Signaling state: <span id="signaling-state"></span></p>
-
-      <h2 class="debug-header">
-        数据通道
-        <button class="expand-btn" onclick="toggleContainer(this)">
-          &#x25B6;
-        </button>
-      </h2>
-
-      <div id="data-channel-container" style="display: none">
-        <pre id="data-channel" style="height: 200px"></pre>
+    <div class="media-div">
+      <div class="button-container">
+        <h2>人体姿态估计视频流</h2>
+        <button id="start" onclick="start()">开始</button>
+        <button id="stop" onclick="stop()">停止</button>
       </div>
 
+      <div id="media">
+        <audio id="audio" autoplay="true"></audio>
+        <video id="video" autoplay="true" playsinline="true"></video>
+      </div>
+    </div>
+  </div>
+
+  <div class="debug-div">
+    <div class="debug-container">
       <h2 class="debug-header">
-        SDP
-        <button class="expand-btn" onclick="toggleContainer(this)">
+        连接状态
+        <button class="expand-btn">
+          &#x25B6;
+        </button>
+      </h2>
+      <div class="expand-container" style="display: none">
+        <p>ICE gathering state: <span id="ice-gathering-state"></span></p>
+        <p>ICE connection state: <span id="ice-connection-state"></span></p>
+        <p>Signaling state: <span id="signaling-state"></span></p>
+      </div>
+    </div>
+
+
+    <div class="debug-container">
+      <h2 class="debug-header">
+        数据通道
+        <button class="expand-btn">
           &#x25B6;
         </button>
       </h2>
 
-      <div id="sdp-container" style="display: none">
+      <div class="expand-container" style="display: none">
+        <pre id="data-channel"></pre>
+      </div>
+    </div>
+
+    <div class="debug-container">
+      <h2 class="debug-header">
+        SDP
+        <button class="expand-btn">
+          &#x25B6;
+        </button>
+      </h2>
+
+      <div class="expand-container" style="display: none">
         <h3>请求</h3>
         <pre id="offer-sdp"></pre>
 
@@ -141,6 +152,8 @@
         <pre id="answer-sdp"></pre>
       </div>
     </div>
-    <script src="client.js"></script>
-  </body>
+
+        <script src="client.js"></script>
+</body>
+
 </html>

@@ -294,12 +294,16 @@ function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
 }
 
-function toggleContainer(button) {
-  var container = button.nextElementSibling;
+var expandButtons = document.querySelectorAll(".expand-btn");
 
-  if (container.style.display === "none") {
-    container.style.display = "block";
-  } else {
-    container.style.display = "none";
-  }
-}
+expandButtons.forEach(function (button) {
+  button.addEventListener("click", function () {
+    var container = button.parentNode.parentNode.querySelector(".expand-container");
+
+    if (container.style.display === "none") {
+      container.style.display = "block";
+    } else {
+      container.style.display = "none";
+    }
+  });
+});
