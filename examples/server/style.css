@@ -16,6 +16,28 @@ body {
   align-items: center;
   border-bottom: 1px solid #ddd;
   padding: 16px;
+  width: 100%;
+}
+
+.title-container {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  justify-content: center;
+  width: 100%;
+}
+
+.title-container h1 {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  justify-content: center;
+  text-align: center;
+}
+
+.title-container .chinese-title {
+  order: -1;
+  margin-bottom: 16px;
 }
 
 /* Style the page title */
